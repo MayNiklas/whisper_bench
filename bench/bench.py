@@ -79,16 +79,41 @@ def benchmark_model(model_name="medium") -> (float, float):
         "Loading time for " + model_name + " model: ", end_load_time - start_load_time
     )
 
-    print("Benchmarking transcription time for " + model_name + " model...")
+    # benchmark short audio file
+    print(
+        "Benchmarking transcription time (short audio file) for "
+        + model_name
+        + " model..."
+    )
+    start_transcribe_time = time.time()
+    model.transcribe("test_files/En-Open_Source_Software_CD-article.ogg", language="EN")
+    end_transcribe_time = time.time()
+    print(
+        "Transcription time (short audio file) for " + model_name + " model: ",
+        end_transcribe_time - start_transcribe_time,
+    )
+    short_audio_file_transcription_time = end_transcribe_time - start_transcribe_time
+
+    # benchmark long audio file
+    print(
+        "Benchmarking transcription time (long audio file) for "
+        + model_name
+        + " model..."
+    )
     start_transcribe_time = time.time()
     model.transcribe("test_files/A_Time_for_Choosing.ogg", language="EN")
     end_transcribe_time = time.time()
     print(
-        "Transcription time for " + model_name + " model: ",
+        "Transcription time (long audio file) for " + model_name + " model: ",
         end_transcribe_time - start_transcribe_time,
     )
+    long_audio_file_transcription_time = end_transcribe_time - start_transcribe_time
 
-    return end_load_time - start_load_time, end_transcribe_time - start_transcribe_time
+    return (
+        end_load_time - start_load_time,
+        short_audio_file_transcription_time,
+        long_audio_file_transcription_time,
+    )
 
 
 def cli():
@@ -126,7 +151,8 @@ def cli():
         model_results = {
             "model": model,
             "model_load_time": model_times[0],
-            "transcription_time": model_times[1],
+            "transcription_time_short": model_times[1],
+            "transcription_time_long": model_times[2],
         }
         results.append(model_results)
 

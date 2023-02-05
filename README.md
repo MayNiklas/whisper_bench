@@ -24,4 +24,8 @@ whisper_bench
 
 ### Audio files being used
 
+To compare the performance for different lengths of audio files, we run the benchmark with one short and one long audio file.
+In theory, the setup time should stay arround the same for both files, while the processing time should linearly increase with the length of the audio file.
+
+* https://en.wikipedia.org/wiki/File:En-Open_Source_Software_CD-article.ogg (public domain license)
 * https://commons.wikimedia.org/wiki/File:A_Time_for_Choosing.ogg (public domain license)
