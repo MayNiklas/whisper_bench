@@ -53,7 +53,7 @@ def download_model(model_name="medium"):
 
     print("Trying to download and load " + model_name + " model...")
     try:
-        model = whisper.load_model(model_name)
+        whisper.load_model(model_name)
         print(model_name + " model loaded...")
         return True
     except:
