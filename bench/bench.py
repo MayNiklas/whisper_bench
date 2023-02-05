@@ -42,6 +42,7 @@ def download_model(model_name="medium"):
 
     By just importing the model, it will be downloaded automatically.
     We want to download the models before the benchmark starts.
+    Otherwise the benchmark would be unfair, since it would be influenced by the download time.
 
     The models are downloaded to the following path:
     ~/.cache/whisper/
@@ -60,38 +61,34 @@ def download_model(model_name="medium"):
         return False
 
 
-def benchmark_model_load(model_name="medium"):
+def benchmark_model(model_name="medium") -> (float, float):
     """
-    Benchmark the model loading time
-    """
+    Benchmark the loading time and transcribing time of the model
 
-    print("Benchmarking model load time for " + model_name + " model...")
-
-    start_time = time.time()
-    model = whisper.load_model(model_name)
-    end_time = time.time()
-
-    print("Model load time for " + model_name + " model: ", end_time - start_time)
-
-    return end_time - start_time
-
-
-def benchmark_transcription(model_name="medium"):
-    """
-    Benchmark the transcription time
+    Args:
+        model_name (str, optional): The model to benchmark. Defaults to "medium".
+    Returns:
+        (float, float): model loading time, transcription time
     """
 
+    print("Benchmarking loading time for " + model_name + " model...")
+    start_load_time = time.time()
     model = whisper.load_model(model_name, in_memory=True)
+    end_load_time = time.time()
+    print(
+        "Loading time for " + model_name + " model: ", end_load_time - start_load_time
+    )
 
     print("Benchmarking transcription time for " + model_name + " model...")
-
-    start_time = time.time()
+    start_transcribe_time = time.time()
     result = model.transcribe("benchmark_file.ogg", language="DE")
-    end_time = time.time()
+    end_transcribe_time = time.time()
+    print(
+        "Transcription time for " + model_name + " model: ",
+        end_transcribe_time - start_transcribe_time,
+    )
 
-    print("Transcription time for " + model_name + " model: ", end_time - start_time)
-
-    return end_time - start_time
+    return end_load_time - start_load_time, end_transcribe_time - start_transcribe_time
 
 
 def cli():
@@ -123,18 +120,19 @@ def cli():
     results = []
 
     for model in available_models:
-        print("Benchmarking " + model + " model...")
+        print("==================================")
 
+        model_times = benchmark_model(model)
         model_results = {
             "model": model,
-            "model_load_time": benchmark_model_load(model),
-            "transcription_time": benchmark_transcription(model),
+            "model_load_time": model_times[0],
+            "transcription_time": model_times[1],
         }
-
         results.append(model_results)
 
     print("Benchmark finished!")
-    print("Please send the following results:")
+    print("Please send us the following results:")
+    print("==================================")
 
     output = {
         "system_info": system_info,
