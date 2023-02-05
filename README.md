@@ -21,3 +21,7 @@ pip install -e .
 # run the benchmark
 whisper_bench
 ```
+
+### Audio files being used
+
+* https://commons.wikimedia.org/wiki/File:A_Time_for_Choosing.ogg (public domain license)
