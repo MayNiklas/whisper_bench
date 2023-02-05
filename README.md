@@ -7,6 +7,7 @@ Thank you for helping us to evaluate the performance of Whisper on different har
 ```bash
 # clone the repository
 git clone https://github.com/MayNiklas/whisper_bench.git
+
 # change into the directory
 cd whisper_bench
 
