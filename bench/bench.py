@@ -1,5 +1,6 @@
 import json
 import os
+import time
 
 import torch
 import whisper
@@ -35,7 +36,7 @@ def get_system_info() -> list:
     return device_info
 
 
-def download_model():
+def download_model(model_name="medium"):
     """
     Download the models from the internet.
 
@@ -46,34 +47,51 @@ def download_model():
     ~/.cache/whisper/
     """
 
-    # TODO: try / catch for each model
     # not all models are available for all devices!
     # especially the large model is not available for smaller gpu's
 
-    model = whisper.load_model("tiny")
-    print("tiny model loaded...")
-    model = whisper.load_model("base")
-    print("base model loaded...")
-    model = whisper.load_model("small")
-    print("small model loaded...")
-    model = whisper.load_model("medium")
-    print("medium model loaded...")
-    model = whisper.load_model("large")
-    print("large model loaded...")
-
-    print("All models downloaded successfully!")
-
-    return
+    print("Trying to download and load " + model_name + " model...")
+    try:
+        model = whisper.load_model(model_name)
+        print(model_name + " model loaded...")
+        return True
+    except:
+        print(model_name + " model not available for this device.")
+        return False
 
 
-def benchmark_model_load():
+def benchmark_model_load(model_name="medium"):
     """
     Benchmark the model loading time
     """
 
-    # TODO: implement this
+    print("Benchmarking model load time for " + model_name + " model...")
 
-    pass
+    start_time = time.time()
+    model = whisper.load_model(model_name)
+    end_time = time.time()
+
+    print("Model load time for " + model_name + " model: ", end_time - start_time)
+
+    return end_time - start_time
+
+
+def benchmark_transcription(model_name="medium"):
+    """
+    Benchmark the transcription time
+    """
+
+    model = whisper.load_model(model_name, in_memory=True)
+
+    print("Benchmarking transcription time for " + model_name + " model...")
+
+    start_time = time.time()
+    result = model.transcribe("benchmark_file.ogg", language="DE")
+    end_time = time.time()
+
+    print("Transcription time for " + model_name + " model: ", end_time - start_time)
+
+    return end_time - start_time
 
 
 def cli():
@@ -85,13 +103,45 @@ def cli():
 
     # get system info
     system_info = get_system_info()
-    print(json.dumps(system_info, indent=4))
+
+    # models that we try to load
+    model_names = ["tiny", "base", "small", "medium", "large"]
+
+    # models that load successfully on the current device
+    available_models = []
 
     # download the models
-    download_model()
+    for model_name in model_names:
+        # when the model won't load on the current device, stop downloading
+        if not download_model(model_name):
+            break
+        else:
+            available_models.append(model_name)
+    print("All models downloaded successfully!")
+    print("Available models on this hardware: ", available_models)
 
-    # benchmark the model loading time
-    benchmark_model_load()
+    results = []
+
+    for model in available_models:
+        print("Benchmarking " + model + " model...")
+
+        model_results = {
+            "model": model,
+            "model_load_time": benchmark_model_load(model),
+            "transcription_time": benchmark_transcription(model),
+        }
+
+        results.append(model_results)
+
+    print("Benchmark finished!")
+    print("Please send the following results:")
+
+    output = {
+        "system_info": system_info,
+        "results": results,
+    }
+
+    print(json.dumps(output, indent=4))
 
 
 if __name__ == "__main__":
