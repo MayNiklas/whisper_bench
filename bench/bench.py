@@ -1,7 +1,8 @@
-import whisper
-import torch
-import os
 import json
+import os
+
+import torch
+import whisper
 
 
 def get_system_info() -> list:
@@ -75,3 +76,7 @@ def cli():
 
     # download the models
     download_model()
+
+
+if __name__ == "__main__":
+    cli()
