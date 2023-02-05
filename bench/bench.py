@@ -17,6 +17,7 @@ def get_system_info() -> list:
     cpu = {
         "type": "cpu",
         "architecture": os.uname().machine,
+        # TODO: get the cpu name and manufacturer
         "cores": os.cpu_count(),
     }
     device_info.append(cpu)
@@ -65,6 +66,16 @@ def download_model():
     return
 
 
+def benchmark_model_load():
+    """
+    Benchmark the model loading time
+    """
+
+    # TODO: implement this
+
+    pass
+
+
 def cli():
     """
     Entry point for the console script
@@ -78,6 +89,9 @@ def cli():
 
     # download the models
     download_model()
+
+    # benchmark the model loading time
+    benchmark_model_load()
 
 
 if __name__ == "__main__":
