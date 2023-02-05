@@ -70,6 +70,8 @@ def cli():
     Entry point for the console script
     """
 
+    print("Welcome to the Whisper benchmark script!")
+
     # get system info
     system_info = get_system_info()
     print(json.dumps(system_info, indent=4))
