@@ -81,7 +81,7 @@ def benchmark_model(model_name="medium") -> (float, float):
 
     print("Benchmarking transcription time for " + model_name + " model...")
     start_transcribe_time = time.time()
-    result = model.transcribe("benchmark_file.ogg", language="DE")
+    model.transcribe("test_files/A_Time_for_Choosing.ogg", language="EN")
     end_transcribe_time = time.time()
     print(
         "Transcription time for " + model_name + " model: ",
