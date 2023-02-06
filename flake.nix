@@ -6,7 +6,16 @@
 
   outputs = { self, nixpkgs, flake-utils, ... }:
     flake-utils.lib.eachDefaultSystem (system:
-      let pkgs = nixpkgs.legacyPackages.${system};
+      let
+        pkgs = import nixpkgs
+          {
+            inherit system;
+            # needed for CUDA support
+            config = {
+              # allowUnfree = true;
+              # cudaSupport = true;
+            };
+          };
       in
       rec {
         # Use nixpkgs-fmt for `nix fmt'
