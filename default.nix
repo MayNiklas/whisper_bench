@@ -15,6 +15,7 @@ python.buildPythonPackage rec {
 
   propagatedBuildInputs = with python; [
     openai-whisper
+    psutil
     torch
   ];
 

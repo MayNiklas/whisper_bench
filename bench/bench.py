@@ -1,3 +1,4 @@
+import sys
 import json
 import os
 import time
@@ -5,6 +6,18 @@ from typing import Optional
 
 import torch
 import whisper
+import psutil
+import platform
+
+
+if __package__ is None and not hasattr(sys, "frozen"):
+    # direct call of __main__.py
+    import os.path
+
+    path = os.path.realpath(os.path.abspath(__file__))
+    sys.path.insert(0, os.path.dirname(os.path.dirname(path)))
+
+import bench.utils as utils
 
 
 def get_system_info() -> list:
@@ -15,14 +28,29 @@ def get_system_info() -> list:
     # initialize device info dict
     device_info = []
 
+    os = {
+        "type": "os",
+        "system": platform.uname().system,
+        "release": platform.uname().release,
+        "version": platform.uname().version,
+    }
+    device_info.append(os)
+
     # get cpu info
     cpu = {
         "type": "cpu",
-        "architecture": os.uname().machine,
-        # TODO: get the cpu name and manufacturer
-        "cores": os.cpu_count(),
+        "architecture": platform.uname().machine,
+        "name": utils.get_cpu_name(),
+        "cores": psutil.cpu_count(logical=False),
+        "threads": psutil.cpu_count(logical=True),
     }
     device_info.append(cpu)
+
+    ram = {
+        "type": "ram",
+        "total": utils.get_size(psutil.virtual_memory().total),
+    }
+    device_info.append(ram)
 
     # get gpu info if being used
     if torch.cuda.is_available():
@@ -30,7 +58,7 @@ def get_system_info() -> list:
             "type": "gpu",
             "cuda version": torch.version.cuda,
             "name": torch.cuda.get_device_name(0),
-            "memory": torch.cuda.get_device_properties(0).total_memory,
+            "memory": utils.get_size(torch.cuda.get_device_properties(0).total_memory),
         }
         device_info.append(gpu)
 
