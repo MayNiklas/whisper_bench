@@ -56,7 +56,9 @@ def ensure_model_is_present_and_usable(model_name="medium") -> bool:
     # not all models are available for all devices!
     # especially the large model is not available for smaller gpu's
 
-    print(f"Trying to load '{model_name}' model (might be downloaded if not in cache)...")
+    print(
+        f"Trying to load '{model_name}' model (might be downloaded if not in cache)..."
+    )
     try:
         whisper.load_model(model_name)
         print(f"'{model_name}' model loaded...")
@@ -89,20 +91,28 @@ def benchmark_model(model_name="medium") -> Optional[tuple[float, float, float]]
     print(f"Loading time for '{model_name}' model: {model_load_time}")
 
     # benchmark short audio file
-    print(f"Benchmarking transcription time (short audio file) for '{model_name}' model...")
+    print(
+        f"Benchmarking transcription time (short audio file) for '{model_name}' model..."
+    )
     start_transcribe_time = time.time()
     model.transcribe("test_files/En-Open_Source_Software_CD-article.ogg", language="EN")
     end_transcribe_time = time.time()
     short_audio_file_transcription_time = end_transcribe_time - start_transcribe_time
-    print(f"Transcription time (short audio file) for '{model_name}' model: {short_audio_file_transcription_time}")
+    print(
+        f"Transcription time (short audio file) for '{model_name}' model: {short_audio_file_transcription_time}"
+    )
 
     # benchmark long audio file
-    print(f"Benchmarking transcription time (long audio file) for '{model_name}' model...")
+    print(
+        f"Benchmarking transcription time (long audio file) for '{model_name}' model..."
+    )
     start_transcribe_time = time.time()
     model.transcribe("test_files/A_Time_for_Choosing.ogg", language="EN")
     end_transcribe_time = time.time()
     long_audio_file_transcription_time = end_transcribe_time - start_transcribe_time
-    print(f"Transcription time (long audio file) for '{model_name}' model: {long_audio_file_transcription_time}")
+    print(
+        f"Transcription time (long audio file) for '{model_name}' model: {long_audio_file_transcription_time}"
+    )
 
     return (
         model_load_time,
@@ -171,7 +181,7 @@ def cli():
     output = {
         "system_info": system_info,
         "results": results,
-        "failed_models": list(not_available_or_failed_set)
+        "failed_models": list(not_available_or_failed_set),
     }
 
     print(json.dumps(output, indent=4))
