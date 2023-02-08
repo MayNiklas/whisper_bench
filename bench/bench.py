@@ -52,13 +52,13 @@ def download_model(model_name="medium"):
     # not all models are available for all devices!
     # especially the large model is not available for smaller gpu's
 
-    print("Trying to download and load " + model_name + " model...")
+    print(f"Trying to download and load '{model_name}' model...")
     try:
         whisper.load_model(model_name)
-        print(model_name + " model loaded...")
+        print(f"'{model_name}' model loaded...")
         return True
     except:
-        print(model_name + " model not available for this device.")
+        print(f"'{model_name}' model not available for this device.")
         return False
 
 
@@ -72,7 +72,7 @@ def benchmark_model(model_name="medium") -> Optional[tuple[float, float, float]]
         (model loading time, short transcription time, long transcription time) if model could be loaded, else None
     """
 
-    print("Benchmarking loading time for " + model_name + " model...")
+    print(f"Benchmarking loading time for '{model_name}' model...")
     start_load_time = time.time()
     try:
         model = whisper.load_model(model_name, in_memory=True)
@@ -81,42 +81,27 @@ def benchmark_model(model_name="medium") -> Optional[tuple[float, float, float]]
         return
 
     end_load_time = time.time()
-    print(
-        "Loading time for " + model_name + " model: ", end_load_time - start_load_time
-    )
+    model_load_time = end_load_time - start_load_time
+    print(f"Loading time for '{model_name}' model: {model_load_time}")
 
     # benchmark short audio file
-    print(
-        "Benchmarking transcription time (short audio file) for "
-        + model_name
-        + " model..."
-    )
+    print(f"Benchmarking transcription time (short audio file) for '{model_name}' model...")
     start_transcribe_time = time.time()
     model.transcribe("test_files/En-Open_Source_Software_CD-article.ogg", language="EN")
     end_transcribe_time = time.time()
-    print(
-        "Transcription time (short audio file) for " + model_name + " model: ",
-        end_transcribe_time - start_transcribe_time,
-    )
     short_audio_file_transcription_time = end_transcribe_time - start_transcribe_time
+    print(f"Transcription time (short audio file) for '{model_name}' model: {short_audio_file_transcription_time}")
 
     # benchmark long audio file
-    print(
-        "Benchmarking transcription time (long audio file) for "
-        + model_name
-        + " model..."
-    )
+    print(f"Benchmarking transcription time (long audio file) for '{model_name}' model...")
     start_transcribe_time = time.time()
     model.transcribe("test_files/A_Time_for_Choosing.ogg", language="EN")
     end_transcribe_time = time.time()
-    print(
-        "Transcription time (long audio file) for " + model_name + " model: ",
-        end_transcribe_time - start_transcribe_time,
-    )
     long_audio_file_transcription_time = end_transcribe_time - start_transcribe_time
+    print(f"Transcription time (long audio file) for '{model_name}' model: {long_audio_file_transcription_time}")
 
     return (
-        end_load_time - start_load_time,
+        model_load_time,
         short_audio_file_transcription_time,
         long_audio_file_transcription_time,
     )
