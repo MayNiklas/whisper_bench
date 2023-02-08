@@ -57,7 +57,7 @@ def download_model(model_name="medium"):
         whisper.load_model(model_name)
         print(f"'{model_name}' model loaded...")
         return True
-    except:
+    except Exception:
         print(f"'{model_name}' model not available for this device.")
         return False
 
