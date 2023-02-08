@@ -1,6 +1,7 @@
 import json
 import os
 import time
+from typing import Optional
 
 import torch
 import whisper
@@ -61,19 +62,24 @@ def download_model(model_name="medium"):
         return False
 
 
-def benchmark_model(model_name="medium") -> (float, float):
+def benchmark_model(model_name="medium") -> Optional[tuple[float, float, float]]:
     """
     Benchmark the loading time and transcribing time of the model
 
     Args:
         model_name (str, optional): The model to benchmark. Defaults to "medium".
     Returns:
-        (float, float): model loading time, transcription time
+        (model loading time, short transcription time, long transcription time) if model could be loaded, else None
     """
 
     print("Benchmarking loading time for " + model_name + " model...")
     start_load_time = time.time()
-    model = whisper.load_model(model_name, in_memory=True)
+    try:
+        model = whisper.load_model(model_name, in_memory=True)
+    except torch.cuda.OutOfMemoryError as e:
+        print(f"Not enough memory - Can't load model '{model_name}'")
+        return
+
     end_load_time = time.time()
     print(
         "Loading time for " + model_name + " model: ", end_load_time - start_load_time
@@ -142,12 +148,18 @@ def cli():
     print("All models downloaded successfully!")
     print("Available models on this hardware: ", available_models)
 
-    results = []
-
+    results: list[dict] = []  # list with model timings that worked
+    failed_models: list[str] = []  # list with model_names that failed to load
     for model in available_models:
         print("==================================")
 
         model_times = benchmark_model(model)
+        # only add models to result that actually worked
+        # keep track over which models failed
+        if model_times is None:
+            failed_models.append(model)
+            continue
+
         model_results = {
             "model": model,
             "model_load_time": model_times[0],
@@ -163,6 +175,7 @@ def cli():
     output = {
         "system_info": system_info,
         "results": results,
+        "failed_models": failed_models
     }
 
     print(json.dumps(output, indent=4))
