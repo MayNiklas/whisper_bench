@@ -37,28 +37,32 @@ def get_system_info() -> list:
     return device_info
 
 
-def download_model(model_name="medium"):
+def ensure_model_is_present_and_usable(model_name="medium") -> bool:
     """
-    Download the models from the internet.
+    Download the models from the internet if not present in cache.
+    Also ensures the model fits into the GPU
 
-    By just importing the model, it will be downloaded automatically.
+    By just importing the model, it will be downloaded automatically if needed.
     We want to download the models before the benchmark starts.
-    Otherwise the benchmark would be unfair, since it would be influenced by the download time.
+    Otherwise, the benchmark would be unfair, since it would be influenced by the download time.
 
     The models are downloaded to the following path:
     ~/.cache/whisper/
+
+    Returns:
+        True: model is present and fits into GPU, False: model doesn't fit or something (like the download) goes wrong
     """
 
     # not all models are available for all devices!
     # especially the large model is not available for smaller gpu's
 
-    print(f"Trying to download and load '{model_name}' model...")
+    print(f"Trying to load '{model_name}' model (might be downloaded if not in cache)...")
     try:
         whisper.load_model(model_name)
         print(f"'{model_name}' model loaded...")
         return True
     except Exception:
-        print(f"'{model_name}' model not available for this device.")
+        print(f"'{model_name}' doesn't work for this device.")
         return False
 
 
@@ -123,14 +127,17 @@ def cli():
     # models that load successfully on the current device
     available_models = []
 
-    # download the models
+    # load the models
     for model_name in model_names:
-        # when the model won't load on the current device, stop downloading
-        if not download_model(model_name):
+        # when the model won't load on the current device, stop loading
+        # size is only increasing
+        if not ensure_model_is_present_and_usable(model_name):
             break
         else:
             available_models.append(model_name)
-    print("All models downloaded successfully!")
+    else:
+        print("All models are loaded successfully!")
+
     print("Available models on this hardware: ", available_models)
 
     results: list[dict] = []  # list with model timings that worked
