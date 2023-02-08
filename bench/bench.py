@@ -140,6 +140,9 @@ def cli():
 
     print("Available models on this hardware: ", available_models)
 
+    # set that hold all models that weren't able to load or failed for other reasons
+    not_available_or_failed_set = set(model_names).difference(set(available_models))
+
     results: list[dict] = []  # list with model timings that worked
     failed_models: list[str] = []  # list with model_names that failed to load
     for model in available_models:
@@ -148,8 +151,9 @@ def cli():
         model_times = benchmark_model(model)
         # only add models to result that actually worked
         # keep track over which models failed
+        print(model_times)
         if model_times is None:
-            failed_models.append(model)
+            not_available_or_failed_set.add(model)
             continue
 
         model_results = {
@@ -167,7 +171,7 @@ def cli():
     output = {
         "system_info": system_info,
         "results": results,
-        "failed_models": failed_models
+        "failed_models": list(not_available_or_failed_set)
     }
 
     print(json.dumps(output, indent=4))
