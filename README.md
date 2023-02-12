@@ -4,6 +4,9 @@ Thank you for helping us to evaluate the performance of Whisper on different har
 
 ## How to run the benchmark
 
+Important note: you need to have CUDA as well as ffmpeg installed!
+In theory, this benchmark should also work on Windows, but you have to install pytorch manually. For more information on how to setup pytorch, look at the website: https://pytorch.org/get-started/locally/
+
 ```bash
 # clone the repository
 git clone https://github.com/MayNiklas/whisper_bench.git
