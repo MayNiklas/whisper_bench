@@ -19,6 +19,7 @@ setup(
     author="MayNiklas",
     author_email="",
     description="",
+    include_package_data=True,
     entry_points={
         "console_scripts": ["whisper_bench=bench.bench:cli"],
     },

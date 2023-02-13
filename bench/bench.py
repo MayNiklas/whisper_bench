@@ -123,7 +123,11 @@ def benchmark_model(model_name="medium") -> Optional[tuple[float, float, float]]
         f"Benchmarking transcription time (short audio file) for '{model_name}' model..."
     )
     start_transcribe_time = time.time()
-    model.transcribe("test_files/En-Open_Source_Software_CD-article.ogg", language="EN")
+    model.transcribe(
+        os.path.dirname(os.path.abspath(__file__))
+        + "/test_files/En-Open_Source_Software_CD-article.ogg",
+        language="EN",
+    )
     end_transcribe_time = time.time()
     short_audio_file_transcription_time = end_transcribe_time - start_transcribe_time
     print(
@@ -135,7 +139,11 @@ def benchmark_model(model_name="medium") -> Optional[tuple[float, float, float]]
         f"Benchmarking transcription time (long audio file) for '{model_name}' model..."
     )
     start_transcribe_time = time.time()
-    model.transcribe("test_files/A_Time_for_Choosing.ogg", language="EN")
+    model.transcribe(
+        os.path.dirname(os.path.abspath(__file__))
+        + "/test_files/A_Time_for_Choosing.ogg",
+        language="EN",
+    )
     end_transcribe_time = time.time()
     long_audio_file_transcription_time = end_transcribe_time - start_transcribe_time
     print(
