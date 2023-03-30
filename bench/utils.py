@@ -1,4 +1,5 @@
-import platform, os
+import os
+import platform
 
 
 def get_size(bytes, suffix="B"):

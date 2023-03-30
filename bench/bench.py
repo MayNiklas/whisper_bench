@@ -1,13 +1,14 @@
-import sys
+import gc
 import json
 import os
+import platform
+import sys
 import time
 from typing import Optional
 
+import psutil
 import torch
 import whisper
-import psutil
-import platform
 
 
 if __package__ is None and not hasattr(sys, "frozen"):
@@ -84,6 +85,9 @@ def ensure_model_is_present_and_usable(model_name="medium") -> bool:
     # not all models are available for all devices!
     # especially the large model is not available for smaller gpu's
 
+    gc.collect()
+    torch.cuda.empty_cache()
+
     print(
         f"Trying to load '{model_name}' model (might be downloaded if not in cache)..."
     )
@@ -105,6 +109,9 @@ def benchmark_model(model_name="medium") -> Optional[tuple[float, float, float]]
     Returns:
         (model loading time, short transcription time, long transcription time) if model could be loaded, else None
     """
+
+    gc.collect()
+    torch.cuda.empty_cache()
 
     print(f"Benchmarking loading time for '{model_name}' model...")
     start_load_time = time.time()
