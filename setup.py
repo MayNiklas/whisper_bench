@@ -21,6 +21,6 @@ setup(
     description="",
     include_package_data=True,
     entry_points={
-        "console_scripts": ["whisper_bench=bench.bench:cli"],
+        "console_scripts": ["whisper_bench=bench.bench:cli", "faster_bench=bench.faster_bench:cli"],
     },
 )

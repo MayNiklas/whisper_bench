@@ -26,6 +26,7 @@ python.buildPythonPackage rec {
   src = ./.;
 
   propagatedBuildInputs = with python; [
+    faster-whisper
     openai-whisper
     psutil
     torch
